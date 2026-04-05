@@ -1,0 +1,22 @@
+# Root .gitignore for Zorvyn-Task
+node_modules
+client/node_modules
+server/node_modules
+.env
+server/.env
+client/.env
+.DS_Store
+dist
+client/dist
+server/dist
+build
+.vscode
+.idea
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.vercel
+.netlify
