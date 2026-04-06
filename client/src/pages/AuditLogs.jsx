@@ -40,7 +40,7 @@ const AuditLogs = () => {
       if (filterAction) params.action = filterAction;
       if (searchResourceId) params.resourceId = searchResourceId;
       
-      const res = await axios.get(`/audit`, { params });
+      const res = await axios.get(`/api/audit`, { params });
       setLogs(res.data.data);
       setTotalPages(res.data.totalPages);
     } catch (error) {

@@ -17,8 +17,8 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common['Authorization'];
   }
 
-  // Base URL for API - defaults to local, adapts via Vercel env
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+  // Base URL for domain - defaults to local, adapts via Vercel env
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
   axios.defaults.baseURL = API_URL;
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await axios.post('/api/auth/login', { email, password });
       const { token, ...userData } = response.data;
       
       setToken(token);
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (email, password, role) => {
     try {
-      const response = await axios.post('/auth/signup', { email, password, role });
+      const response = await axios.post('/api/auth/signup', { email, password, role });
       const { token, ...userData } = response.data;
       
       setToken(token);
