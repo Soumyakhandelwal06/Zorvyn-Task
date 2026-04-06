@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Edit2, Trash2, Filter } from 'lucide-react';
+import { Edit2, Trash2, Filter, Database, Search } from 'lucide-react';
 import EditRecordModal from './EditRecordModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import Pagination from './Pagination';
