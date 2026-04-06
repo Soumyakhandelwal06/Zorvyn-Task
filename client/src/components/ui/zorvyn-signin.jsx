@@ -259,7 +259,7 @@ const ZorvynSignIn = () => {
       await login("admin@zorvyn.com", "admin123");
       navigate("/dashboard");
     } catch (err) {
-      setError("Demo credentials failed. Please ensure the admin account exists.");
+      setError(err.response?.data?.message || err.message || "Demo login failed. Check connection.");
     } finally {
       setIsLoading(false);
     }

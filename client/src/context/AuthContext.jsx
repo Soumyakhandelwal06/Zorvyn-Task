@@ -61,25 +61,35 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
-    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-    const { token, ...userData } = response.data;
-    
-    setToken(token);
-    setUser(userData);
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    return userData;
+    try {
+      const response = await axios.post('/auth/login', { email, password });
+      const { token, ...userData } = response.data;
+      
+      setToken(token);
+      setUser(userData);
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error("Login failed:", error.response?.data || error.message);
+      throw error;
+    }
   };
 
   const signup = async (email, password, role) => {
-    const response = await axios.post(`${API_URL}/auth/signup`, { email, password, role });
-    const { token, ...userData } = response.data;
-    
-    setToken(token);
-    setUser(userData);
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    return userData;
+    try {
+      const response = await axios.post('/auth/signup', { email, password, role });
+      const { token, ...userData } = response.data;
+      
+      setToken(token);
+      setUser(userData);
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error("Signup failed:", error.response?.data || error.message);
+      throw error;
+    }
   };
 
   const logout = () => {
