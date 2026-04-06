@@ -5,12 +5,39 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import toast from 'react-hot-toast';
-import { PlusCircle, ShieldCheck, Download, LogOut, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Label } from 'recharts';
-import CreateRecordModal from '../components/CreateRecordModal';
+import { ShieldCheck, LogOut, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { 
+  PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Label,
+  BarChart, Bar, LineChart, Line
+} from 'recharts';
 import { DashboardSkeleton } from '../components/SkeletonLoader';
 
 const COLORS = ['#4f46e5', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+
+// ─── Custom Animated Dot for Charts ──────────────────────────────────────────
+const AnimatedDot = (props) => {
+  const { cx, cy, stroke, fill, index } = props;
+  return (
+    <motion.circle
+      key={`dot-${index}`} // Stable key ensures animation only plays once on mount
+      cx={cx}
+      cy={cy}
+      r={5}
+      fill={fill}
+      stroke={stroke}
+      strokeWidth={2}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 400, 
+        damping: 15,
+        delay: 0.6 + (index * 0.1) // Increased delay to pop in as line draws
+      }}
+    />
+  );
+};
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -18,7 +45,6 @@ const Dashboard = () => {
   const [summary, setSummary] = useState(null);
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -26,10 +52,18 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const summaryRes = await axios.get('http://localhost:5001/api/dashboard/summary');
-      const trendsRes = await axios.get('http://localhost:5001/api/dashboard/trends');
+      const config = {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      };
+
+      const summaryRes = await axios.get('http://localhost:5001/api/dashboard/summary', config);
+      const trendsRes = await axios.get('http://localhost:5001/api/dashboard/trends', config);
+      
       setSummary(summaryRes.data);
-      setTrends(trendsRes.data);
+      
+      // Ensure frontend sorting as a failsafe
+      const sorted = (trendsRes.data || []).sort((a, b) => (a.sortKey || '').localeCompare(b.sortKey || ''));
+      setTrends(sorted);
     } catch (error) {
       console.error("Error fetching dashboard data", error);
     } finally {
@@ -37,27 +71,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleExportCSV = async () => {
-    try {
-      const res = await axios.get('http://localhost:5001/api/records/export', { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'financial_records.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.success("CSV exported successfully!");
-    } catch (error) {
-      console.error("Error exporting CSV", error);
-      toast.error("Failed to export CSV. Ensure you have permissions.");
-    }
-  };
 
-  const handleRecordAdded = () => {
-    fetchDashboardData();
-    window.location.reload(); 
-  };
 
   if (loading) {
     return <DashboardSkeleton />;
@@ -68,11 +82,22 @@ const Dashboard = () => {
     value: item._sum.amount
   })) || [];
 
+  const barData = summary?.categoryTotals.map(item => ({
+    name: item.category,
+    amount: item._sum.amount,
+    type: item.type
+  })) || [];
+
+  const trendDataWithNet = trends.map(item => ({
+    ...item,
+    net: item.income - item.expense
+  }));
+
   const totalCategoryAmount = categoryData.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
     <div style={{ maxWidth: '100%', margin: '0 auto' }}>
-      {showAddModal && <CreateRecordModal onClose={() => setShowAddModal(false)} onRecordCreated={handleRecordAdded} />}
+
       
       <div className="page-header">
         <div className="page-title">
@@ -89,24 +114,7 @@ const Dashboard = () => {
           )}
         </div>
         <div className="page-actions">
-          {user?.role === 'ADMIN' && (
-            <button 
-              onClick={() => setShowAddModal(true)} 
-              className="btn-primary" 
-              style={{ background: 'var(--success-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <PlusCircle size={18} /> Add Record
-            </button>
-          )}
-          {(user?.role === 'ADMIN' || user?.role === 'ANALYST') && (
-            <button 
-              onClick={handleExportCSV} 
-              className="btn-secondary" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <Download size={18} /> Export CSV
-            </button>
-          )}
+
         </div>
       </div>
 
@@ -151,20 +159,6 @@ const Dashboard = () => {
         <div className="saas-card" style={{ height: '360px' }}>
           <div className="saas-card-header">CATEGORY BREAKDOWN</div>
           <div style={{ position: 'relative', width: '100%', height: '90%' }}>
-            {/* Absolute positioning bound specifically to cx="35%" and cy="50%" of the container */}
-            <div style={{ 
-              position: 'absolute', 
-              top: '50%', 
-              left: '35%', 
-              transform: 'translate(-50%, -50%)', 
-              pointerEvents: 'none', 
-              zIndex: 10,
-              fontSize: '1.25rem',
-              fontWeight: 'bold',
-              color: '#111827'
-            }}>
-              ${totalCategoryAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-            </div>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -181,6 +175,18 @@ const Dashboard = () => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
+                {/* Hub text perfectly centered relative to the visually offset pie hole */}
+                <text
+                  x="26%"
+                  y="50%"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="#111827"
+                  style={{ fontSize: '1.5rem', fontWeight: 'bold', fontFamily: "'DM Sans', sans-serif" }}
+                  dy={10} // Bringing it down slightly as requested
+                >
+                  ${totalCategoryAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </text>
                 <RechartsTooltip 
                   contentStyle={{ 
                     backgroundColor: 'rgba(255, 255, 255, 0.95)', 
@@ -224,9 +230,79 @@ const Dashboard = () => {
                   fontSize: '0.85rem'
                 }} 
               />
-              <Area type="monotone" dataKey="income" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorIncome)" activeDot={{ r: 8 }} dot={{ r: 5, strokeWidth: 2, fill: '#fff' }} />
-              <Area type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorExpense)" activeDot={{ r: 8 }} dot={{ r: 5, strokeWidth: 2, fill: '#fff' }} />
+              <Area 
+                type="monotone" 
+                dataKey="income" 
+                stroke="#10b981" 
+                strokeWidth={2} 
+                fillOpacity={1} 
+                fill="url(#colorIncome)" 
+                activeDot={{ r: 8 }} 
+                dot={<AnimatedDot fill="#fff" stroke="#10b981" />} 
+              />
+              <Area 
+                type="monotone" 
+                dataKey="expense" 
+                stroke="#ef4444" 
+                strokeWidth={2} 
+                fillOpacity={1} 
+                fill="url(#colorExpense)" 
+                activeDot={{ r: 8 }} 
+                dot={<AnimatedDot fill="#fff" stroke="#ef4444" />} 
+              />
             </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="saas-card" style={{ height: '360px' }}>
+          <div className="saas-card-header">CATEGORY VOLUME</div>
+          <ResponsiveContainer width="100%" height="90%">
+            <BarChart data={barData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(value) => `$${value}`} />
+              <RechartsTooltip 
+                cursor={{ fill: '#f8fafc' }}
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+              />
+              <Bar 
+                dataKey="amount" 
+                radius={[6, 6, 0, 0]} 
+                barSize={32}
+                isAnimationActive={true}
+                animationDuration={1500}
+                animationBegin={200}
+              >
+                {barData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.type === 'INCOME' ? '#10b981' : '#4f46e5'} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="saas-card" style={{ height: '360px' }}>
+          <div className="saas-card-header">NET PROFITABILITY</div>
+          <ResponsiveContainer width="100%" height="90%">
+            <LineChart data={trendDataWithNet} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={(value) => `$${value}`} />
+              <RechartsTooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="net" 
+                stroke="#6366f1" 
+                strokeWidth={4} 
+                dot={<AnimatedDot fill="#6366f1" stroke="#fff" />} 
+                activeDot={{ r: 8 }}
+                isAnimationActive={true}
+                animationDuration={1500}
+                animationBegin={500}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>

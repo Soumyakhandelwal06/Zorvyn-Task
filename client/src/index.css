@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -62,7 +64,7 @@ html {
 }
 
 body {
-  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #f9fafb;
   color: var(--text-primary);
   min-height: 100vh;
@@ -78,17 +80,103 @@ body {
   flex-direction: column;
 }
 
-/* Typography Utilities */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.025em;
+/* Modal & Detail Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
 }
 
-p {
+.modal-content {
+  background: var(--surface-color);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--card-border);
+  background: #f8fafc;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
   color: var(--text-secondary);
-  line-height: 1.6;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--text-primary);
+}
+
+.json-viewer {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  max-height: 400px;
+}
+
+.json-viewer pre {
+  margin: 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.detail-value {
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* Glass-panel replaced with crisp Cards */
@@ -495,3 +583,95 @@ p {
   height: 100%;
 }
 
+
+/* Dual Range Slider Styles */
+.range-slider-container {
+  position: relative;
+  width: 240px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.range-slider-track {
+  position: absolute;
+  width: calc(100% - 20px);
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  z-index: 1;
+}
+
+.range-slider-progress {
+  position: absolute;
+  height: 6px;
+  background: var(--primary-color);
+  border-radius: 3px;
+  z-index: 2;
+}
+
+.range-slider-input {
+  position: absolute;
+  width: calc(100% - 20px);
+  pointer-events: none;
+  -webkit-appearance: none;
+  z-index: 3;
+  height: 6px;
+  background: none;
+}
+
+.range-slider-input::-webkit-slider-thumb {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid var(--primary-color);
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-appearance: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease;
+}
+
+.range-slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.range-slider-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid var(--primary-color);
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.range-tooltip {
+  position: absolute;
+  top: -30px;
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.range-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--primary-color);
+}

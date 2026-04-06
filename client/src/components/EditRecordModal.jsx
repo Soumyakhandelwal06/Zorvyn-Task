@@ -43,7 +43,10 @@ const EditRecordModal = ({ record, onClose, onRecordUpdated }) => {
       setErrors({});
       
       setLoading(true);
-      await axios.put(`http://localhost:5001/api/records/${record.id}`, parsedData);
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:5001/api/records/${record.id}`, parsedData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Record updated successfully!');
       onRecordUpdated();
       onClose();

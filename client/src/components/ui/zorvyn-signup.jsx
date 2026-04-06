@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { BarChart3, ArrowRight, CheckCircle2, TrendingUp, ShieldCheck, Users, Eye, EyeOff } from "lucide-react";
+import { 
+  BarChart3, ArrowRight, CheckCircle2, TrendingUp, ShieldCheck, Users, Eye, EyeOff,
+  Wallet, Coins, Banknote, Landmark, Calculator, RefreshCcw, Lock, Download, Shield, FileText,
+  CreditCard, PiggyBank, Receipt, DollarSign, PieChart, Tag, Search, TrendingDown,
+  Briefcase, CircleDollarSign, Percent, ClipboardList, Scale, Globe
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -7,54 +12,89 @@ import { useNavigate, Link } from "react-router-dom";
 // ─── Animated Finance Background for left panel ───────────────────────────────
 const FinanceBackground = () => (
   <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-    {/* Dot grid */}
+    {/* Cross grid pattern */}
     <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.12 }}>
       <defs>
-        <pattern id="dots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="1.2" fill="#a5b4fc" />
+        <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#a5b4fc" strokeWidth="0.5" />
         </pattern>
       </defs>
-      <rect width="100%" height="100%" fill="url(#dots)" />
+      <rect width="100%" height="100%" fill="url(#grid)" />
     </svg>
 
     {/* Floating glow orbs */}
-    <div style={{ position: "absolute", width: 260, height: 260, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)", top: -60, left: -60 }} />
-    <div style={{ position: "absolute", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%)", bottom: 80, right: -40 }} />
-
-    {/* Mini bar chart decoration */}
-    <div style={{ position: "absolute", bottom: 100, left: 32, display: "flex", alignItems: "flex-end", gap: 6, opacity: 0.35 }}>
-      {[44, 62, 48, 78, 56, 88, 72].map((h, i) => (
-        <motion.div
-          key={i}
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ delay: 0.4 + i * 0.08, duration: 0.5 }}
-          style={{ width: 10, height: h * 0.7, borderRadius: "3px 3px 0 0", background: i % 2 === 0 ? "#818cf8" : "#6ee7b7", transformOrigin: "bottom" }}
-        />
-      ))}
-    </div>
-
-    {/* Trend line SVG decoration */}
-    <svg style={{ position: "absolute", bottom: 60, left: 24, opacity: 0.3 }} width="120" height="40" viewBox="0 0 120 40">
-      <motion.polyline
-        points="0,35 20,25 40,28 60,16 80,12 100,6 120,2"
-        fill="none" stroke="#6ee7b7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.2, duration: 1.2 }}
-      />
-    </svg>
+    <div style={{ position: "absolute", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)", top: -80, left: -60 }} />
+    <div style={{ position: "absolute", width: 250, height: 250, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.18) 0%, transparent 70%)", bottom: -40, right: -40 }} />
   </div>
 );
 
+// ─── Floating Background Icons ───────────────────────────────────────────────
+const FloatingBackgroundIcons = () => {
+  const icons = [
+    { Icon: Wallet, top: '8%', left: '5%', delay: 0, color: '#6366f1' },
+    { Icon: PiggyBank, top: '12%', right: '6%', delay: 1, color: '#f59e0b' },
+    { Icon: Landmark, bottom: '15%', left: '4%', delay: 2, color: '#10b981' },
+    { Icon: CreditCard, bottom: '10%', right: '5%', delay: 3, color: '#4f46e5' },
+    { Icon: Coins, top: '40%', right: '3%', delay: 0.5, color: '#f59e0b' },
+    { Icon: Receipt, bottom: '45%', left: '2%', delay: 1.5, color: '#10b981' },
+    { Icon: Banknote, top: '80%', left: '5%', delay: 2.2, color: '#6366f1' },
+    { Icon: Calculator, bottom: '35%', right: '4%', delay: 1.2, color: '#4f46e5' },
+    { Icon: DollarSign, top: '25%', left: '1.5%', delay: 0.6, color: '#818cf8' },
+    { Icon: PieChart, top: '60%', right: '2.5%', delay: 1.9, color: '#10b981' },
+    { Icon: Tag, bottom: '25%', left: '3.5%', delay: 2.4, color: '#f59e0b' },
+    { Icon: Search, top: '15%', right: '1.5%', delay: 1.1, color: '#6366f1' },
+    { Icon: TrendingDown, bottom: '50%', right: '4.5%', delay: 2.8, color: '#ef4444' },
+    { Icon: FileText, top: '90%', left: '2%', delay: 1.5, color: '#818cf8' },
+    { Icon: Briefcase, top: '5%', left: '3%', delay: 0.2, color: '#6366f1' },
+    { Icon: CircleDollarSign, top: '45%', right: '2%', delay: 1.8, color: '#10b981' },
+    { Icon: Percent, bottom: '5%', left: '1.5%', delay: 2.2, color: '#f59e0b' },
+    { Icon: ClipboardList, top: '75%', right: '4%', delay: 1.4, color: '#4f46e5' },
+    { Icon: Scale, bottom: '35%', left: '2.5%', delay: 0.9, color: '#6366f1' },
+    { Icon: Globe, top: '30%', right: '5%', delay: 3.1, color: '#10b981' },
+  ];
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1, overflow: 'hidden' }}>
+      {icons.map(({ Icon, top, right, bottom, left, delay, color }, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ 
+            opacity: [0, 0.12, 0.08], 
+            scale: [0.5, 1, 1],
+            y: [0, -15, 0],
+            rotate: [0, 8, 0]
+          }}
+          transition={{ 
+            opacity: { duration: 2 },
+            scale: { duration: 2 }, y: { repeat: Infinity, duration: 6 + i, ease: 'easeInOut' },
+            rotate: { repeat: Infinity, duration: 8 + i, ease: 'easeInOut' },
+            delay: delay
+          }}
+          style={{ position: 'absolute', top, right, bottom, left, color }}
+        >
+          <Icon size={36 + (i % 3) * 8} />
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
 // ─── Feature pill ─────────────────────────────────────────────────────────────
-const FeaturePill = ({ icon, text, delay }) => (
+const FeaturePill = ({ icon, text, color, bg, delay, style }) => (
   <motion.div
     initial={{ opacity: 0, x: -16 }}
     animate={{ opacity: 1, x: 0 }}
     transition={{ delay, duration: 0.45 }}
-    style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 14px", border: "1px solid rgba(255,255,255,0.1)" }}
+    style={{ 
+      position: 'absolute', zIndex: 10, ...style,
+      display: "flex", alignItems: "center", gap: 10, background: bg, 
+      borderRadius: 12, padding: "10px 16px", border: `1px solid ${color}15`, 
+      boxShadow: "0 4px 12px rgba(0,0,0,0.03)" 
+    }}
   >
-    <span style={{ color: "#a5b4fc" }}>{icon}</span>
-    <span style={{ color: "#e0e7ff", fontSize: "0.82rem", fontWeight: 500 }}>{text}</span>
+    <span style={{ color }}>{icon}</span>
+    <span style={{ color: "#111827", fontSize: "0.85rem", fontWeight: 700 }}>{text}</span>
   </motion.div>
 );
 
@@ -62,7 +102,6 @@ const FeaturePill = ({ icon, text, delay }) => (
 const ROLES = [
   { value: "VIEWER", label: "Viewer", desc: "View reports & dashboards", icon: <Eye size={14} /> },
   { value: "ANALYST", label: "Analyst", desc: "Add & manage transactions", icon: <TrendingUp size={14} /> },
-  { value: "ADMIN", label: "Admin", desc: "Full access & user management", icon: <ShieldCheck size={14} /> },
 ];
 
 // ─── Main Signup Component ────────────────────────────────────────────────────
@@ -111,19 +150,18 @@ const ZorvynSignup = () => {
     <div
       style={{
         position: "fixed", inset: 0, display: "flex", alignItems: "center",
-        justifyContent: "center", padding: 16, overflowY: "auto",
-        backgroundColor: '#fafbff',
+        justifyContent: "center", backgroundColor: "#fafbff",
+        padding: 16, overflowY: "auto",
         backgroundImage: [
           'linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px)',
           'linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px)',
-          'radial-gradient(ellipse 80% 60% at 20% -10%, rgba(99,102,241,0.13) 0%, transparent 60%)',
-          'radial-gradient(ellipse 60% 50% at 80% 10%, rgba(139,92,246,0.10) 0%, transparent 55%)',
-          'radial-gradient(ellipse 50% 40% at 10% 80%, rgba(16,185,129,0.07) 0%, transparent 50%)',
-        ].join(', '),
-        backgroundSize: '40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%',
-        backgroundPosition: '-1px -1px, -1px -1px, center, center, center',
+          'radial-gradient(circle at 0% 0%, rgba(99,102,241,0.06) 0%, transparent 40%)',
+          'radial-gradient(circle at 100% 100%, rgba(16,185,129,0.06) 0%, transparent 40%)'
+        ].join(','),
+        backgroundSize: '40px 40px, 40px 40px, 100% 100%, 100% 100%'
       }}
     >
+      <FloatingBackgroundIcons />
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -166,7 +204,7 @@ const ZorvynSignup = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45 }}
-              style={{ fontSize: "1.55rem", fontWeight: 800, color: "#fff", lineHeight: 1.25, marginBottom: 12, letterSpacing: "-0.02em" }}
+              style={{ fontSize: "2rem", fontWeight: 700, color: "#fff", lineHeight: 1.15, marginBottom: 16, letterSpacing: "-0.02em", fontFamily: "'DM Serif Display', serif" }}
             >
               The smart finance platform for modern businesses
             </motion.h1>
@@ -175,18 +213,20 @@ const ZorvynSignup = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              style={{ fontSize: "0.84rem", color: "#a5b4fc", lineHeight: 1.65, marginBottom: 28 }}
+              style={{ fontSize: "0.92rem", color: "#a5b4fc", lineHeight: 1.6, marginBottom: 32 }}
             >
-              Track income, expenses &amp; net balance in real-time. Role-based control so every team member sees just what they need.
+              Track every rupee with real-time technical insights. Multi-role access keeps your financial data secure.
             </motion.p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <FeaturePill icon={<TrendingUp size={14} />} text="Real-Time Financial Dashboard" delay={0.7} />
-              <FeaturePill icon={<ShieldCheck size={14} />} text="Role-Based Access Control" delay={0.82} />
-              <FeaturePill icon={<Users size={14} />} text="Multi-User Team Management" delay={0.94} />
-              <FeaturePill icon={<CheckCircle2 size={14} />} text="Audit Logs &amp; CSV Export" delay={1.06} />
-            </div>
           </div>
+
+          {/* Floating and Separated Feature Pills – Positioned organically at sides */}
+          {/* LEFT SIDE */}
+          <FeaturePill icon={<Users size={16} />} text="Multi-Role Teams" color="#818cf8" bg="#eef2ff" delay={0.7} style={{ position: 'fixed', left: '3%', top: '20%', zIndex: 100 }} />
+          <FeaturePill icon={<Shield size={16} />} text="Secure Audit Trail" color="#f59e0b" bg="#fffbeb" delay={0.94} style={{ position: 'fixed', left: '5%', top: '55%', zIndex: 100 }} />
+
+          {/* RIGHT SIDE */}
+          <FeaturePill icon={<TrendingUp size={16} />} text="Live Analytics" color="#10b981" bg="#ecfdf5" delay={0.82} style={{ position: 'fixed', right: '4%', top: '35%', zIndex: 100 }} />
+          <FeaturePill icon={<FileText size={16} />} text="One-Click Reporting" color="#0ea5e9" bg="#f0f9ff" delay={1.06} style={{ position: 'fixed', right: '2%', top: '70%', zIndex: 100 }} />
 
           {/* Social proof */}
           <motion.div
@@ -221,19 +261,12 @@ const ZorvynSignup = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Mobile logo */}
-            <div className="flex items-center gap-2 mb-6 md:hidden">
-              <div style={{ width: 32, height: 32, borderRadius: 9, background: "linear-gradient(135deg,#6366f1,#4f46e5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <BarChart3 size={16} color="#fff" />
+            {/* Integrated Logo for both Mobile/Desktop */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#4f46e5,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <BarChart3 size={18} color="#fff" />
               </div>
-              <span style={{ fontWeight: 800, fontSize: "1.1rem", color: "#4f46e5" }}>ZorvynFin</span>
-            </div>
-
-            {/* Orange accent icon */}
-            <div style={{ marginBottom: 6 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: "linear-gradient(135deg,#f97316,#ea580c)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(249,115,22,0.35)", marginBottom: 14 }}>
-                <BarChart3 size={20} color="#fff" />
-              </div>
+              <span style={{ fontWeight: 800, fontSize: "1.2rem", color: "#4f46e5", letterSpacing: '-0.02em' }}>ZorvynFin</span>
             </div>
 
             <h1 style={{ fontSize: "1.85rem", fontWeight: 700, color: "#0f172a", marginBottom: 6, fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.01em' }}>Create your account</h1>
@@ -325,9 +358,10 @@ const ZorvynSignup = () => {
                       key={r.value}
                       style={{
                         display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                        borderRadius: 10, cursor: "pointer", transition: "all 0.18s",
-                        border: `1.5px solid ${role === r.value ? "#6366f1" : "#e5e7eb"}`,
-                        background: role === r.value ? "#eef2ff" : "#f9fafb"
+                        borderRadius: 12, cursor: "pointer", transition: "all 0.25s ease",
+                        border: `2px solid ${role === r.value ? "#4f46e5" : "#f1f5f9"}`,
+                        background: role === r.value ? "#f8faff" : "#fff",
+                        boxShadow: role === r.value ? "0 4px 20px rgba(79,70,229,0.08)" : "none"
                       }}
                     >
                       <input
@@ -335,15 +369,17 @@ const ZorvynSignup = () => {
                         checked={role === r.value} onChange={() => setRole(r.value)}
                         style={{ display: "none" }}
                       />
-                      <div style={{ width: 30, height: 30, borderRadius: 8, background: role === r.value ? "#e0e7ff" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", color: role === r.value ? "#4f46e5" : "#9ca3af", flexShrink: 0 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: role === r.value ? "#4f46e5" : "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", color: role === r.value ? "#fff" : "#64748b", flexShrink: 0, transition: 'all 0.2s' }}>
                         {r.icon}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <p style={{ fontSize: "0.84rem", fontWeight: 700, color: role === r.value ? "#4338ca" : "#374151", marginBottom: 1 }}>{r.label}</p>
-                        <p style={{ fontSize: "0.74rem", color: "#6b7280" }}>{r.desc}</p>
+                        <p style={{ fontSize: "0.95rem", fontWeight: 700, color: role === r.value ? "#1e1b4b" : "#334155", marginBottom: 1 }}>{r.label}</p>
+                        <p style={{ fontSize: "0.8rem", color: "#64748b" }}>{r.desc}</p>
                       </div>
                       {role === r.value && (
-                        <CheckCircle2 size={16} color="#4f46e5" />
+                        <div style={{ padding: 4, background: '#4f46e5', borderRadius: '50%' }}>
+                          <CheckCircle2 size={12} color="#fff" />
+                        </div>
                       )}
                     </label>
                   ))}
@@ -358,11 +394,11 @@ const ZorvynSignup = () => {
                 style={{
                   position: "relative", overflow: "hidden", width: "100%", height: 44,
                   borderRadius: 11, border: "none", cursor: isLoading ? "not-allowed" : "pointer",
-                  background: "linear-gradient(135deg, #f97316, #ea580c)",
+                  background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
                   color: "#fff", fontSize: "0.92rem", fontWeight: 700,
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  boxShadow: "0 4px 16px rgba(249,115,22,0.4)",
-                  opacity: isLoading ? 0.65 : 1, marginTop: 4
+                  boxShadow: "0 8px 24px rgba(79,70,229,0.35)",
+                  opacity: isLoading ? 0.65 : 1, marginTop: 12
                 }}
               >
                 {isLoading ? (

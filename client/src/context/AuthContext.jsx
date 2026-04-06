@@ -21,6 +21,18 @@ export const AuthProvider = ({ children }) => {
   const API_URL = 'http://localhost:5001/api';
 
   useEffect(() => {
+    // Interceptor to handle 401 Unauthorized globally
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          console.warn("401 Unauthorized received. Logging out...");
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
     const checkUserLoggedIn = async () => {
       try {
         if (token) {
@@ -41,6 +53,10 @@ export const AuthProvider = ({ children }) => {
       }
     };
     checkUserLoggedIn();
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, [token]);
 
   const login = async (email, password) => {

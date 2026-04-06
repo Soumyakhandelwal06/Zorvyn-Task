@@ -11,7 +11,7 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.get('/export', protect, authorize('ADMIN', 'ANALYST'), exportCSV);
+router.get('/export', protect, authorize('ADMIN', 'ANALYST', 'VIEWER'), exportCSV);
 
 router
   .route('/')

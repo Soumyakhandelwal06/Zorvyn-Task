@@ -45,8 +45,17 @@ app.get('/', (req, res) => {
   res.send('Finance Backend API is running...');
 });
 
-const PORT = process.env.PORT || 5000;
+const prisma = require('./lib/prisma');
+const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, async () => {
+  console.log(`[BOOT] Server running on port ${PORT}`);
+  console.log(`[BOOT] DATABASE_URL: ${process.env.DATABASE_URL?.substring(0, 20)}...`);
+  
+  try {
+    const count = await prisma.financialRecord.count();
+    console.log(`[BOOT] Database Heartbeat: Found ${count} financial records.`);
+  } catch (err) {
+    console.error(`[BOOT] Database Connection Error: ${err.message}`);
+  }
 });

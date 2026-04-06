@@ -1,5 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Eye, EyeOff, ArrowRight, BarChart3, ShieldCheck, TrendingUp, FileText } from "lucide-react";
+import { 
+  Eye, EyeOff, ArrowRight, BarChart3, ShieldCheck, TrendingUp, FileText,
+  Wallet, Coins, Banknote, Landmark, Calculator, RefreshCcw, CheckCircle2,
+  CreditCard, PiggyBank, Receipt, DollarSign, PieChart, Tag, Search, TrendingDown,
+  Briefcase, CircleDollarSign, Percent, ClipboardList, Scale, Globe
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -33,27 +38,13 @@ const FinanceCanvas = ({ width = 420, height = 540 }) => {
     let rafId;
     const startTime = Date.now();
 
-    const drawGrid = () => {
-      const gap = 22;
-      for (let x = gap; x < width; x += gap) {
-        for (let y = gap; y < height; y += gap) {
-          ctx.beginPath();
-          ctx.arc(x, y, 1.2, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(79, 70, 229, 0.12)";
-          ctx.fill();
-        }
-      }
-    };
-
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       const elapsed = (Date.now() - startTime) / 1000;
       const progress = Math.min(elapsed / 2.5, 1);
 
-      drawGrid();
-
-      const chartTop = height * 0.32;
-      const chartBottom = height * 0.75;
+      const chartTop = height * 0.46;
+      const chartBottom = height * 0.85;
       const chartH = chartBottom - chartTop;
       const barZoneW = width * 0.84;
       const barZoneX = width * 0.08;
@@ -133,31 +124,104 @@ const FinanceCanvas = ({ width = 420, height = 540 }) => {
   }, [width, height]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: "100%", height: "100%", display: "block" }}
-    />
+    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
+      {/* Cross grid pattern background */}
+      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.12 }}>
+        <defs>
+          <pattern id="grid-signin" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#4f46e5" strokeWidth="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid-signin)" />
+      </svg>
+      
+      <div style={{ position: "absolute", width: "100%", height: "100%", background: "radial-gradient(circle at 50% 50%, rgba(165,180,252,0.1) 0%, rgba(255,255,255,0) 100%)" }} />
+
+      <canvas
+        ref={canvasRef}
+        style={{ width: "100%", height: "100%", display: "block", position: "relative", zIndex: 1 }}
+      />
+    </div>
   );
 };
 
 // ─── Floating KPI Badge ───────────────────────────────────────────────────────
-const KPIBadge = ({ icon, label, value, color, delay, style }) => (
+const KPIBadge = ({ icon, label, value, color, delay, style, isVivid }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.82 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ delay, duration: 0.45 }}
-    style={{ position: "absolute", zIndex: 20, ...style }}
-    className="bg-white rounded-xl shadow-lg border border-gray-100 px-3 py-2 flex items-center gap-2"
+    initial={{ opacity: 0, scale: 0.82, y: 10 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    transition={{ delay, duration: 0.5, type: 'spring', stiffness: 100 }}
+    style={{ 
+      position: "absolute", zIndex: 20, ...style,
+      background: isVivid ? color : "#fff",
+      color: isVivid ? "#fff" : "#111827",
+      borderRadius: 12, padding: '10px 16px',
+      boxShadow: isVivid ? `0 8px 20px ${color}33` : "0 8px 24px rgba(0,0,0,0.06)",
+      display: 'flex', alignItems: 'center', gap: 10,
+      border: isVivid ? 'none' : '1px solid rgba(0,0,0,0.04)'
+    }}
   >
-    <div className="p-1.5 rounded-lg" style={{ background: `${color}18` }}>
-      {icon}
+    <div style={{ padding: 6, borderRadius: 8, background: isVivid ? 'rgba(255,255,255,0.2)' : `${color}15` }}>
+      {React.cloneElement(icon, { color: isVivid ? '#fff' : color })}
     </div>
     <div>
-      <p className="text-xs text-gray-500 font-medium leading-none" style={{ marginBottom: 3 }}>{label}</p>
-      <p className="text-sm font-bold leading-none" style={{ color }}>{value}</p>
+      <p style={{ fontSize: '0.7rem', fontWeight: 600, color: isVivid ? 'rgba(255,255,255,0.85)' : '#64748b', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</p>
+      <p style={{ fontSize: '0.875rem', fontWeight: 800, margin: 0 }}>{value}</p>
     </div>
   </motion.div>
 );
+
+// ─── Floating Background Icons ───────────────────────────────────────────────
+const FloatingBackgroundIcons = () => {
+  const icons = [
+    { Icon: Wallet, top: '5%', left: '4%', delay: 0, color: '#4f46e5' },
+    { Icon: PiggyBank, top: '15%', right: '6%', delay: 1, color: '#f59e0b' },
+    { Icon: Landmark, bottom: '12%', left: '5%', delay: 2, color: '#10b981' },
+    { Icon: CreditCard, bottom: '20%', right: '4%', delay: 3, color: '#4f46e5' },
+    { Icon: Calculator, top: '45%', left: '3%', delay: 0.5, color: '#6366f1' },
+    { Icon: Receipt, top: '35%', right: '2%', delay: 1.5, color: '#10b981' },
+    { Icon: Coins, bottom: '40%', right: '5%', delay: 2.5, color: '#f59e0b' },
+    { Icon: Banknote, top: '75%', left: '2%', delay: 1.2, color: '#10b981' },
+    { Icon: DollarSign, top: '25%', left: '2%', delay: 0.7, color: '#4f46e5' },
+    { Icon: PieChart, top: '55%', right: '3%', delay: 1.8, color: '#6366f1' },
+    { Icon: Tag, bottom: '30%', left: '4%', delay: 2.4, color: '#10b981' },
+    { Icon: Search, top: '10%', right: '4%', delay: 1.1, color: '#f59e0b' },
+    { Icon: TrendingDown, bottom: '15%', right: '2%', delay: 2.9, color: '#ef4444' },
+    { Icon: FileText, top: '85%', right: '6%', delay: 1.6, color: '#6366f1' },
+    { Icon: Briefcase, top: '40%', right: '5%', delay: 0.9, color: '#4f46e5' },
+    { Icon: CircleDollarSign, bottom: '45%', left: '3%', delay: 2.1, color: '#10b981' },
+    { Icon: Percent, top: '65%', left: '1%', delay: 1.3, color: '#f59e0b' },
+    { Icon: ClipboardList, bottom: '5%', right: '4%', delay: 2.7, color: '#6366f1' },
+    { Icon: Scale, top: '20%', right: '1.5%', delay: 0.4, color: '#10b981' },
+    { Icon: Globe, bottom: '25%', right: '5%', delay: 3.2, color: '#4f46e5' },
+  ];
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1, overflow: 'hidden' }}>
+      {icons.map(({ Icon, top, right, bottom, left, delay, color }, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ 
+            opacity: [0, 0.12, 0.08], 
+            scale: [0.5, 1, 1],
+            y: [0, -15, 0],
+            rotate: [0, 8, 0]
+          }}
+          transition={{ 
+            opacity: { duration: 2 },
+            scale: { duration: 2 }, y: { repeat: Infinity, duration: 6 + i, ease: 'easeInOut' },
+            rotate: { repeat: Infinity, duration: 8 + i, ease: 'easeInOut' },
+            delay: delay
+          }}
+          style={{ position: 'absolute', top, right, bottom, left, color }}
+        >
+          <Icon size={36 + (i % 3) * 8} />
+        </motion.div>
+      ))}
+    </div>
+  );
+};
 
 // ─── Main Sign-In Component ───────────────────────────────────────────────────
 const ZorvynSignIn = () => {
@@ -187,6 +251,20 @@ const ZorvynSignIn = () => {
     }
   };
 
+  const handleDemoLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      await login("admin@zorvyn.com", "admin123");
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Demo credentials failed. Please ensure the admin account exists.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div
       style={{
@@ -204,6 +282,7 @@ const ZorvynSignIn = () => {
         backgroundPosition: '-1px -1px, -1px -1px, center, center, center',
       }}
     >
+      <FloatingBackgroundIcons />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -229,23 +308,28 @@ const ZorvynSignIn = () => {
             <FinanceCanvas width={420} height={560} />
           </div>
 
-          {/* Floating badges */}
-          <KPIBadge icon={<TrendingUp size={13} color="#10b981" />} label="Net Balance" value="+$2,800" color="#10b981" delay={0.8} style={{ top: 18, right: 16 }} />
-          <KPIBadge icon={<TrendingUp size={13} color="#4f46e5" />} label="Revenue" value="+32%" color="#4f46e5" delay={1.05} style={{ bottom: 76, left: 14 }} />
-          <KPIBadge icon={<ShieldCheck size={13} color="#f59e0b" />} label="Audit Score" value="98%" color="#f59e0b" delay={1.3} style={{ bottom: 18, right: 16 }} />
+          {/* Floating and Separated KPI Badges – Positioned organically at sides */}
+          {/* LEFT SIDE */}
+          <KPIBadge icon={<RefreshCcw size={14} />} label="Accounting" value="Hub" color="#f59e0b" delay={0.8} style={{ position: 'fixed', left: '4%', top: '15%', zIndex: 100 }} isVivid />
+          <KPIBadge icon={<ShieldCheck size={14} />} label="Security" value="System" color="#6366f1" delay={1} style={{ position: 'fixed', left: '2%', top: '42%', zIndex: 100 }} isVivid />
+          <KPIBadge icon={<Receipt size={14} />} label="Invoices" value="12 Paid" color="#4f46e5" delay={1.2} style={{ position: 'fixed', left: '5%', top: '70%', zIndex: 100 }} />
+
+          {/* RIGHT SIDE */}
+          <KPIBadge icon={<TrendingUp size={14} />} label="Growth" value="+32%" color="#10b981" delay={0.9} style={{ position: 'fixed', right: '6%', top: '25%', zIndex: 100 }} />
+          <KPIBadge icon={<ShieldCheck size={14} />} label="Compliance" value="98%" color="#4f46e5" delay={1.1} style={{ position: 'fixed', right: '3%', top: '65%', zIndex: 100 }} />
 
           {/* Brand overlay — top centre */}
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, paddingTop: 32, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, paddingTop: 56, zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
             <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
-              style={{ width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg,#4f46e5,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(79,70,229,0.3)", marginBottom: 12 }}>
-              <BarChart3 size={22} color="#fff" />
+              style={{ width: 48, height: 48, borderRadius: 14, background: "linear-gradient(135deg,#4f46e5,#7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(79,70,229,0.35)", marginBottom: 16 }}>
+              <BarChart3 size={24} color="#fff" />
             </motion.div>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: "1.5rem", fontWeight: 800 }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: "1.75rem", fontWeight: 800, fontFamily: "'DM Serif Display', serif" }}>
               <span style={{ color: '#4f46e5' }}>Zorvyn</span><span style={{ color: '#0f172a' }}>Fin</span>
             </motion.div>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.75 }}
-              style={{ fontSize: "0.8rem", color: "#64748b", textAlign: "center", maxWidth: 180, marginTop: 6, fontWeight: 500 }}>
+              style={{ fontSize: "0.875rem", color: "#64748b", textAlign: "center", maxWidth: 220, marginTop: 8, fontWeight: 500, lineHeight: 1.5 }}>
               Precision finance tracking with real-time technical insights
             </motion.p>
           </div>
@@ -367,10 +451,35 @@ const ZorvynSignIn = () => {
               </div>
             </div>
 
-            <p style={{ textAlign: "center", fontSize: "0.84rem", color: "#6b7280", marginTop: 18 }}>
+            <p style={{ textAlign: "center", fontSize: "0.84rem", color: "#6b7280", marginTop: 24 }}>
               Don't have an account?{" "}
               <Link to="/signup" style={{ color: "#4f46e5", fontWeight: 700, textDecoration: "none" }}>Create account</Link>
             </p>
+
+            {/* Admin Demo Quick Access */}
+            <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ flex: 1, height: "1px", background: "#f1f5f9" }} />
+                <span style={{ fontSize: "0.72rem", color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Demo Access</span>
+                <div style={{ flex: 1, height: "1px", background: "#f1f5f9" }} />
+              </div>
+
+              <motion.button
+                onClick={handleDemoLogin}
+                type="button"
+                whileHover={{ scale: 1.01, backgroundColor: "#f8faff" }}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                  width: "100%", height: 42, borderRadius: 10, border: "2px solid #e2e8f0",
+                  background: "#fff", color: "#475569", fontSize: "0.88rem", fontWeight: 700,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  cursor: "pointer", transition: "all 0.2s"
+                }}
+              >
+                <ShieldCheck size={16} color="#4f46e5" />
+                Login as Admin (Demo)
+              </motion.button>
+            </div>
           </motion.div>
         </div>
       </motion.div>

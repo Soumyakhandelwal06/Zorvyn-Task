@@ -45,21 +45,41 @@ const createRecord = async (req, res) => {
 };
 
 const getRecords = async (req, res) => {
-  const { category, type, startDate, endDate } = req.query;
+  const { category, type, startDate, endDate, minAmount, maxAmount, page = 1, limit = 10 } = req.query;
+  const p = parseInt(page);
+  const l = parseInt(limit);
+  const skip = (p - 1) * l;
 
   const where = {};
   if (category) where.category = category;
   if (type) where.type = type;
+  
   if (startDate || endDate) {
     where.date = {};
     if (startDate) where.date.gte = new Date(startDate);
     if (endDate) where.date.lte = new Date(endDate);
   }
 
+  if (minAmount !== undefined && minAmount !== '') {
+    const min = parseFloat(minAmount);
+    if (!isNaN(min)) {
+      where.amount = { ...where.amount, gte: min };
+    }
+  }
+  if (maxAmount !== undefined && maxAmount !== '') {
+    const max = parseFloat(maxAmount);
+    if (!isNaN(max)) {
+      where.amount = { ...where.amount, lte: max };
+    }
+  }
+
   try {
+    const total = await prisma.financialRecord.count({ where });
     const records = await prisma.financialRecord.findMany({
       where,
       orderBy: { date: 'desc' },
+      skip,
+      take: l,
       include: {
         user: {
           select: { email: true, role: true },
@@ -67,7 +87,17 @@ const getRecords = async (req, res) => {
       },
     });
 
-    res.json(records);
+    const maxAmountRes = await prisma.financialRecord.aggregate({
+      _max: { amount: true }
+    });
+
+    res.json({
+      data: records,
+      total,
+      page: p,
+      totalPages: Math.ceil(total / l),
+      maxAmountEver: maxAmountRes._max.amount || 1000
+    });
   } catch (error) {
     console.error('Get Records Error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

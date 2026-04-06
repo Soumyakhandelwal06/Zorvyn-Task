@@ -8,9 +8,11 @@ const getDashboardSummary = async (req, res) => {
     // Check if data exists in Redis
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
-      console.log('Serving from Redis cache');
+      console.log(`[DASHBOARD-AUDIT] Serving from Redis cache for key: ${cacheKey}`);
       return res.json(JSON.parse(cachedData));
     }
+
+    console.log(`[DASHBOARD-AUDIT] Fetching fresh data from Prisma for user: ${req.user?.id || 'GLOBAL'}`);
 
     const aggregations = await prisma.financialRecord.aggregate({
       _sum: {
@@ -22,6 +24,7 @@ const getDashboardSummary = async (req, res) => {
     });
 
     const totalIncome = aggregations._sum.amount || 0;
+    console.log(`[DASHBOARD-AUDIT] Aggregated Total Income: ${totalIncome}`);
 
     const expenseAggregations = await prisma.financialRecord.aggregate({
       _sum: {
@@ -34,6 +37,7 @@ const getDashboardSummary = async (req, res) => {
 
     const totalExpenses = expenseAggregations._sum.amount || 0;
     const netBalance = totalIncome - totalExpenses;
+    console.log(`[DASHBOARD-AUDIT] Aggregated Total Expenses: ${totalExpenses}, Net: ${netBalance}`);
 
     const categoryTotals = await prisma.financialRecord.groupBy({
       by: ['category', 'type'],
@@ -121,15 +125,28 @@ const getTrends = async (req, res) => {
     });
 
     // Process trends in JS
-    const trends = records.reduce((acc, curr) => {
-      const month = curr.date.toLocaleString('default', { month: 'short', year: 'numeric' });
-      if (!acc[month]) acc[month] = { month, income: 0, expense: 0 };
-      if (curr.type === 'INCOME') acc[month].income += curr.amount;
-      else acc[month].expense += curr.amount;
+    const trendsMap = records.reduce((acc, curr) => {
+      const monthKey = `${curr.date.getFullYear()}-${String(curr.date.getMonth() + 1).padStart(2, '0')}`;
+      const monthLabel = curr.date.toLocaleString('default', { month: 'short', year: 'numeric' });
+      
+      if (!acc[monthKey]) {
+        acc[monthKey] = { 
+          month: monthLabel, 
+          income: 0, 
+          expense: 0,
+          sortKey: monthKey 
+        };
+      }
+      
+      if (curr.type === 'INCOME') acc[monthKey].income += curr.amount;
+      else acc[monthKey].expense += curr.amount;
       return acc;
     }, {});
 
-    res.json(Object.values(trends));
+    // Sort by chronological key
+    const sortedTrends = Object.values(trendsMap).sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+    res.json(sortedTrends);
   } catch (error) {
     console.error('Trends Error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

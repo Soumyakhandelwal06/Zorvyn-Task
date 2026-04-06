@@ -64,17 +64,38 @@ const login = async (req, res) => {
 
 // Admin functions for user management
 const getAllUsers = async (req, res) => {
+  const { page = 1, limit = 10, role, email } = req.query;
+  const p = parseInt(page);
+  const l = parseInt(limit);
+  const skip = (p - 1) * l;
+
   try {
+    const where = {};
+    if (role) where.role = role;
+    if (email) {
+      where.email = { contains: email, mode: 'insensitive' };
+    }
+
+    const total = await prisma.user.count({ where });
     const users = await prisma.user.findMany({
+      where,
       select: {
         id: true,
         email: true,
         role: true,
         createdAt: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: l,
     });
-    res.json(users);
+
+    res.json({
+      data: users,
+      total,
+      page: p,
+      totalPages: Math.ceil(total / l),
+    });
   } catch (error) {
     console.error('Fetch Users Error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
