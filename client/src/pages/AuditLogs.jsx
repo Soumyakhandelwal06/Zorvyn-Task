@@ -75,22 +75,29 @@ const AuditLogs = () => {
               type="text" 
               className="input-field" 
               placeholder="Search Resource ID..." 
-              style={{ paddingLeft: '2.5rem' }}
+              style={{ paddingLeft: '2.5rem', background: 'rgba(255, 255, 255, 0.03)' }}
               value={searchResourceId}
               onChange={(e) => setSearchResourceId(e.target.value)}
             />
           </div>
-          <select 
-            className="input-field" 
-            style={{ width: 'auto', minWidth: '150px' }}
-            value={filterAction}
-            onChange={(e) => setFilterAction(e.target.value)}
-          >
-            <option value="">All Actions</option>
-            <option value="CREATE">Create</option>
-            <option value="UPDATE">Update</option>
-            <option value="DELETE">Delete</option>
-          </select>
+          
+          <div className="filter-group">
+            <div className="filter-select-wrapper" style={{ minWidth: '180px' }}>
+              <ShieldCheck className="filter-icon" size={14} />
+              <select 
+                className="filter-select"
+                value={filterAction}
+                onChange={(e) => setFilterAction(e.target.value)}
+              >
+                <option value="">All Actions</option>
+                <option value="USER_LOGIN">User Login</option>
+                <option value="RECORD_CREATED">Record Created</option>
+                <option value="RECORD_DELETED">Record Deleted</option>
+                <option value="ROLE_UPDATED">Role Updated</option>
+                <option value="REPORT_EXPORTED">Report Exported</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 

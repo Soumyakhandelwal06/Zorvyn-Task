@@ -82,22 +82,27 @@ const UsersPanel = () => {
               type="text" 
               className="input-field" 
               placeholder="Search user email..." 
-              style={{ paddingLeft: '2.5rem' }}
+              style={{ paddingLeft: '2.5rem', background: 'rgba(255, 255, 255, 0.03)' }}
               value={searchEmail}
               onChange={(e) => setSearchEmail(e.target.value)}
             />
           </div>
-          <select 
-            className="input-field" 
-            style={{ width: 'auto', minWidth: '150px' }}
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-          >
-            <option value="">All Roles</option>
-            <option value="ADMIN">ADMIN</option>
-            <option value="ANALYST">ANALYST</option>
-            <option value="VIEWER">VIEWER</option>
-          </select>
+          
+          <div className="filter-group">
+            <div className="filter-select-wrapper" style={{ minWidth: '160px' }}>
+              <UserIcon className="filter-icon" size={14} />
+              <select 
+                className="filter-select"
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+              >
+                <option value="">All Roles</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="ANALYST">ANALYST</option>
+                <option value="VIEWER">VIEWER</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
