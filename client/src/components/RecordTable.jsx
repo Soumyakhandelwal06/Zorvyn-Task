@@ -138,37 +138,42 @@ const RecordTable = () => {
             />
           </div>
 
-          <select 
-            className="input-field" 
-            style={{ width: 'auto', padding: '0.4rem 0.75rem' }}
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="">All Types</option>
-            <option value="INCOME">Income</option>
-            <option value="EXPENSE">Expense</option>
-          </select>
-          
-          <select 
-            className="input-field" 
-            style={{ width: 'auto', padding: '0.4rem 0.75rem' }}
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="Salary">Salary</option>
-            <option value="Freelance">Freelance</option>
-            <option value="Dividends">Dividends</option>
-            <option value="Rent">Rent</option>
-            <option value="Groceries">Groceries</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Dining">Dining</option>
-            <option value="Transport">Transport</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Other">Other</option>
-          </select>
+          <div className="filter-group">
+            <div className="filter-select-wrapper">
+              <Filter className="filter-icon" size={14} />
+              <select 
+                className="filter-select"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+              >
+                <option value="">All Types</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expense</option>
+              </select>
+            </div>
+            
+            <div className="filter-select-wrapper">
+              <Database className="filter-icon" size={14} />
+              <select 
+                className="filter-select"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+              >
+                <option value="">All Categories</option>
+                <option value="Salary">Salary</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Dividends">Dividends</option>
+                <option value="Rent">Rent</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Dining">Dining</option>
+                <option value="Transport">Transport</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Shopping">Shopping</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 

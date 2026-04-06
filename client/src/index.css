@@ -675,3 +675,54 @@ body {
   border-right: 4px solid transparent;
   border-top: 4px solid var(--primary-color);
 }
+/* Filter Controls Refinement */
+.filter-group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filter-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0 0.75rem;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.filter-select-wrapper:hover {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-icon {
+  color: var(--text-secondary);
+  pointer-events: none;
+  margin-right: 0.5rem;
+}
+
+.filter-select {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.6rem 0;
+  width: 100%;
+  cursor: pointer;
+  appearance: none; /* Hide default arrow */
+}
+
+/* Custom indicator for select */
+.filter-select-wrapper::after {
+  content: '▾';
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+  pointer-events: none;
+}
