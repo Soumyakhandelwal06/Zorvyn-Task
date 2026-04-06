@@ -34,7 +34,7 @@ const CreateRecordModal = ({ onClose, onRecordCreated }) => {
       
       setLoading(true);
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5001/api/records', parsedData, {
+      await axios.post('/records', parsedData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Record created skillfully!');

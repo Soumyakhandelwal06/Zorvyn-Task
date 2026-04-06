@@ -55,7 +55,7 @@ const RecordTable = () => {
       if (debouncedMaxAmount !== undefined && debouncedMaxAmount !== '') params.maxAmount = debouncedMaxAmount;
       
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5001/api/records', { 
+      const res = await axios.get('/records', { 
         params,
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -81,7 +81,7 @@ const RecordTable = () => {
     setIsDeleting(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/api/records/${recordToDelete}`, {
+      await axios.delete(`/records/${recordToDelete}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Record deleted");

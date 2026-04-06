@@ -12,7 +12,7 @@ const Records = () => {
 
   const handleExportCSV = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/records/export', { responseType: 'blob' });
+      const res = await axios.get('/records/export', { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;

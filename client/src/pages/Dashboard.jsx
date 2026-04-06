@@ -56,8 +56,8 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       };
 
-      const summaryRes = await axios.get('http://localhost:5001/api/dashboard/summary', config);
-      const trendsRes = await axios.get('http://localhost:5001/api/dashboard/trends', config);
+      const summaryRes = await axios.get('/dashboard/summary', config);
+      const trendsRes = await axios.get('/dashboard/trends', config);
       
       setSummary(summaryRes.data);
       

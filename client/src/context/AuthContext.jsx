@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common['Authorization'];
   }
 
-  // Base URL for API
-  const API_URL = 'http://localhost:5001/api';
+  // Base URL for API - defaults to local, adapts via Vercel env
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+  axios.defaults.baseURL = API_URL;
 
   useEffect(() => {
     // Interceptor to handle 401 Unauthorized globally

@@ -33,7 +33,7 @@ const UsersPanel = () => {
       if (searchEmail) params.email = searchEmail;
       if (filterRole) params.role = filterRole;
 
-      const res = await axios.get(`http://localhost:5001/api/auth/users`, { params });
+      const res = await axios.get(`/auth/users`, { params });
       setUsersList(res.data.data);
       setTotalPages(res.data.totalPages);
     } catch (error) {
@@ -52,7 +52,7 @@ const UsersPanel = () => {
     }
 
     try {
-      await axios.put(`http://localhost:5001/api/auth/users/${id}/role`, { role: newRole });
+      await axios.put(`/auth/users/${id}/role`, { role: newRole });
       toast.success('User role updated successfully');
       setUsersList(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u));
     } catch (error) {
